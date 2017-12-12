@@ -80,7 +80,7 @@ class Verify_Legend_Data(unittest.TestCase):
         pageData = legendContent.get_attribute("innerHTML")
 
         # This prints off all the data needed for when switching to a new agency
-        print legendContent.text
+        # print legendContent.text
 
         # Range: *Check For Each Agency*
         for indexNumber in range (0, 8):
