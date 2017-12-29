@@ -8,6 +8,8 @@ from NEAssertCreateAndDeleteViaAPI import Verify_Login_And_Saving_Routes
 from NEAssertFDandTextSizes import Verify_Future_Dates_And_Text_Sizes
 from NEAssertMapLayers import Verify_Map_Layers
 from NEAssertMenuOptions import Verify_Menu_Options
+from NEPlacesViaAPI import Verify_Saved_Places_Via_The_API
+from NEBothCreateAndDeleteRouteViaAPI import Verify_Login_And_Saving_Routes_Via_API
 import xlrd
 import sys
 from Variables import workbookNameData
@@ -41,9 +43,14 @@ create_and_delete_route = unittest.TestLoader().loadTestsFromTestCase(Verify_Log
 #   7
 menu_options = unittest.TestLoader().loadTestsFromTestCase(Verify_Menu_Options)
 
+#   8
+saved_place_via_api = unittest.TestLoader().loadTestsFromTestCase(Verify_Saved_Places_Via_The_API)
+
+#   9
+create_and_delete_place_via_api = unittest.TestLoader().loadTestsFromTestCase(Verify_Login_And_Saving_Routes_Via_API)
 
 # create a test suite combining search_text and home_page_test
-test_suite = unittest.TestSuite([legend, header_links, future_dates_and_text_sizes, map_layers, user_login, create_and_delete_route, menu_options])
+test_suite = unittest.TestSuite([legend, header_links, future_dates_and_text_sizes, map_layers, user_login, create_and_delete_route, menu_options, saved_place_via_api, create_and_delete_place_via_api])
 
 # counter = 0
 # numOftimes = 100

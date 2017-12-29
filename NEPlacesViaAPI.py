@@ -13,13 +13,9 @@ import xlrd
 from pyvirtualdisplay import Display
 # -*- coding: utf-8 -*-
 
-# /Users/ryankavanaugh/Desktop/AmazonNE/
-
 def post_new_place(placeJson, authToken, headers, accountID):
     apiUrl = 'http://crc-prod-ne-tg-elb-1066571327.us-west-2.elb.amazonaws.com/tgpublicaccounts/api/accounts/' + str(accountID) + '/customAreas?authTokenId=' + str(authToken)
     newPlacePost = requests.post(apiUrl, json=placeJson, headers=headers)
-    # print 'new place function'
-    # print newPlacePost.status_code
     data = json.loads(newPlacePost.content)
     id = data.get('id')
     return id
@@ -28,7 +24,6 @@ def post_new_place(placeJson, authToken, headers, accountID):
 def delete_place(placeID, authToken, headers, accountID):
     deleteUrl = 'http://crc-prod-ne-tg-elb-1066571327.us-west-2.elb.amazonaws.com/tgpublicaccounts/api/accounts/' + str(accountID) + '/customAreas/' + str(placeID) + '?authTokenId=' + str(authToken)
     deleteItem = requests.delete(deleteUrl, headers = headers)
-    # print deleteItem.status_code
 
 
 class Verify_Saved_Places_Via_The_API(unittest.TestCase):
@@ -50,14 +45,11 @@ class Verify_Saved_Places_Via_The_API(unittest.TestCase):
         authToken = jData.get('id')
         accountID = jData.get('accountId')
 
-        # print 'account ID'
         # print accountID
-        # print 'auth token'
         # print authToken
 
         #   GET INITIAL SAVED PLACES VIA API
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        # 777 Gets the user's current saved places and prints them out:
         customAreasAPIUrl = 'http://crc-prod-ne-tg-elb-1066571327.us-west-2.elb.amazonaws.com/tgpublicaccounts/api/accounts/' + str(accountID) + '/customAreas?authTokenId=' + str(authToken)
         customAreaJson = requests.get(customAreasAPIUrl, headers=headers)
         #print customAreaJson.status_code
@@ -69,9 +61,8 @@ class Verify_Saved_Places_Via_The_API(unittest.TestCase):
             print 'The following places are saved for this user:'
             printCounter = 0
             while printCounter < len(data):
-                # print printCounter + 1
+                print printCounter + 1
                 print data[printCounter].get('name')
-               # delete_place(data[printCounter], authToken, headers)
                 printCounter+=1
         #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -142,12 +133,10 @@ class Verify_Saved_Places_Via_The_API(unittest.TestCase):
 
         #   API CLEAN UP / REPORTING
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        # # Clean up events and report back on test results
         delete_place(id1, authToken, headers, accountID)
         delete_place(id2, authToken, headers, accountID)
         delete_place(id3, authToken, headers, accountID)
-        #
-        # # Here we test that the favorite places correctly populated TG-Web
+        # Test that the favorite places were present in TG-Web
         assert BrokenBow
         assert Elmwood
         assert Callaway
