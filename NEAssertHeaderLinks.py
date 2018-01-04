@@ -25,8 +25,6 @@ class CONSTANTS:
     WORKSHEET = WORKBOOK.sheet_by_index(0)
     URL = WORKSHEET.cell(1, 0).value
     ADJUSTRESOLUTION = WORKSHEET.cell(1, 3).value
-    HEADERS = {}
-    HEADERS = WORKSHEET.cell(1, 5).value
 
 
 # Function for Jenkins virtual machine display
@@ -43,9 +41,6 @@ class Verify_Links(unittest.TestCase):
 
 
     def test_tg_web_topbar_links(self):
-
-        # Headers pulled from Excel spreadsheet
-        print CONSTANTS.HEADERS
 
         strList = []
         httpLinkList = []
@@ -80,6 +75,7 @@ class Verify_Links(unittest.TestCase):
                 print str(e)
 
 
+        # If there are errors the test will fail here
         if counter > 0:
             assert False
 

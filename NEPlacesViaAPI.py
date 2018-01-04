@@ -14,13 +14,14 @@ from pyvirtualdisplay import Display
 from Variables import NEWPLACEJSON1, NEWPLACEJSON2, NEWPLACEJSON3
 # -*- coding: utf-8 -*-
 
-# Variables
-URL = 'http://crc-prod-ne-tg-elb-1066571327.us-west-2.elb.amazonaws.com/#favorites?layers=roadReports%2Ccameras&timeFrame=TODAY'
 
-placesJSON = []
-placesJSON.append(NEWPLACEJSON1)
-placesJSON.append(NEWPLACEJSON2)
-placesJSON.append(NEWPLACEJSON3)
+class CONSTANTS:
+    URL = 'http://crc-prod-ne-tg-elb-1066571327.us-west-2.elb.amazonaws.com/#favorites?layers=roadReports%2Ccameras&timeFrame=TODAY'
+
+    PLACESJSON = []
+    PLACESJSON.append(NEWPLACEJSON1)
+    PLACESJSON.append(NEWPLACEJSON2)
+    PLACESJSON.append(NEWPLACEJSON3)
 
 
 def get_permissions_data(headers):
@@ -29,23 +30,6 @@ def get_permissions_data(headers):
     myResponse = requests.post(authTokenURL, json=userInfo, headers=headers)
     jData = json.loads(myResponse.content)
     return jData
-
-
-def post_new_places(placesJson, authToken, headers, accountID):
-    listOfIDs = []
-    for item in placesJson:
-        apiUrl = 'http://crc-prod-ne-tg-elb-1066571327.us-west-2.elb.amazonaws.com/tgpublicaccounts/api/accounts/' + str(accountID) + '/customAreas?authTokenId=' + str(authToken)
-        newPlacePost = requests.post(apiUrl, json=item, headers=headers)
-        data = json.loads(newPlacePost.content)
-        id = data.get('id')
-        listOfIDs.append(id)
-    return listOfIDs
-
-
-def delete_places(placeIDs, authToken, headers, accountID):
-    for placeID in placeIDs:
-        deleteUrl = 'http://crc-prod-ne-tg-elb-1066571327.us-west-2.elb.amazonaws.com/tgpublicaccounts/api/accounts/' + str(accountID) + '/customAreas/' + str(placeID) + '?authTokenId=' + str(authToken)
-        deleteItem = requests.delete(deleteUrl, headers = headers)
 
 
 def get_currently_saved_places(headers, accountID, authToken):
@@ -59,6 +43,17 @@ def get_currently_saved_places(headers, accountID, authToken):
             print printCounter + 1
             print data[printCounter].get('name')
             printCounter += 1
+
+
+def post_new_places(placesJson, authToken, headers, accountID):
+    listOfIDs = []
+    for item in placesJson:
+        apiUrl = 'http://crc-prod-ne-tg-elb-1066571327.us-west-2.elb.amazonaws.com/tgpublicaccounts/api/accounts/' + str(accountID) + '/customAreas?authTokenId=' + str(authToken)
+        newPlacePost = requests.post(apiUrl, json=item, headers=headers)
+        data = json.loads(newPlacePost.content)
+        id = data.get('id')
+        listOfIDs.append(id)
+    return listOfIDs
 
 
 def amz_headers_and_return_driver():
@@ -80,7 +75,7 @@ def amz_headers_and_return_driver():
 
 def login_and_head_to_favorites_page(driver):
     # Open browser and login
-    driver.get(URL)
+    driver.get(CONSTANTS.URL)
     loginElement = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, 'userAccountEmail')))
     driver.find_element_by_id('userAccountEmail').send_keys('ryan.kavanaugh@crc-corp.com')
     driver.find_element_by_id('userAccountPassword').send_keys('test')
@@ -117,7 +112,15 @@ def assert_the_correct_places_are_saved_to_TG_Web(driver):
     assert Callaway
 
 
+def delete_places(placeIDs, authToken, headers, accountID):
+    for placeID in placeIDs:
+        deleteUrl = 'http://crc-prod-ne-tg-elb-1066571327.us-west-2.elb.amazonaws.com/tgpublicaccounts/api/accounts/' + str(
+            accountID) + '/customAreas/' + str(placeID) + '?authTokenId=' + str(authToken)
+        deleteItem = requests.delete(deleteUrl, headers=headers)
+
+
 class Verify_Saved_Places_Via_The_API(unittest.TestCase):
+
 
     def test_create_new_places(self):
         headers = {'host': 'hb.511.nebraska.gov'}
@@ -131,7 +134,7 @@ class Verify_Saved_Places_Via_The_API(unittest.TestCase):
         get_currently_saved_places(headers, accountID, authToken)
 
         # Create new places and return their unique IDs
-        placeIDs = post_new_places(placesJSON, authToken, headers, accountID)
+        placeIDs = post_new_places(CONSTANTS.PLACESJSON, authToken, headers, accountID)
 
         # Verify new places are saved in TG Web
         driver = amz_headers_and_return_driver()
