@@ -14,17 +14,16 @@ import unittest
 import xlrd
 import json
 from pyvirtualdisplay import Display
-from Variables import workbookNameData, CREATEROUTEJSON
+from Variables import WORKBOOKNAMEDATA, CREATEROUTEJSON
 # -*- coding: utf-8 -*-
 
-
+# Function allowing Google Chrome to run on a virtual Jenkins server by providing a virtual window
 def AdjustResolution():
-    # Function that allows Google Chrome to run on a virtual Jenkins server by providing a virtual window
     display = Display(visible=0, size=(800, 800))
     display.start()
 
 class Constants:
-    WORKBOOK = xlrd.open_workbook(workbookNameData)
+    WORKBOOK = xlrd.open_workbook(WORKBOOKNAMEDATA)
     WORKSHEET = WORKBOOK.sheet_by_index(0)
     URL = WORKSHEET.cell(1, 0).value
     USERNAME = WORKSHEET.cell(1, 1).value
@@ -39,14 +38,12 @@ if Constants.ADJUSTRESOLUTION == 1:
 def post_place_to_api(placeJson, authToken, accountID, headers):
     apiPostUrl = 'http://crc-prod-ne-tg-elb-1066571327.us-west-2.elb.amazonaws.com/tgpublicaccounts/api/accounts/' + str(accountID) + '/trips?authTokenId=' + str(authToken)
     newPlacePost = requests.post(apiPostUrl, json=placeJson, headers=headers)
-    #print "Post Place Status Code: " + str(newPlacePost.status_code)
 
 
 def delete_place(placeID, authToken, accountID):
     headers = {'host': 'hb.511.nebraska.gov'}
     deleteUrl = 'http://crc-prod-ne-tg-elb-1066571327.us-west-2.elb.amazonaws.com/tgpublicaccounts/api/accounts/' + str(accountID) + '/trips/' + str(placeID) + '?authTokenId=' + str(authToken)
     deleteItem = requests.delete(deleteUrl, headers=headers)
-    # print 'Delete Place Status Code: ' + str(deleteItem.status_code)
 
 
 def get_authToken_and_call_delete_function():

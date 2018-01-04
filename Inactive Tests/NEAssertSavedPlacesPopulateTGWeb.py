@@ -10,6 +10,7 @@ import unittest
 import json
 import requests
 import xlrd
+from Variables import WORKBOOKNAMEDATA
 from pyvirtualdisplay import Display
 # -*- coding: utf-8 -*-
 
@@ -49,11 +50,6 @@ class Verify_Saved_Places_Via_The_API(unittest.TestCase):
         jData = json.loads(myResponse.content)
         authToken = jData.get('id')
         accountID = jData.get('accountId')
-
-        # print 'account ID'
-        # print accountID
-        # print 'auth token'
-        # print authToken
 
         #   GET INITIAL SAVED PLACES VIA API
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

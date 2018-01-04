@@ -11,23 +11,28 @@ import time
 import unittest
 import xlrd
 from pyvirtualdisplay import Display
-from Variables import workbookNameData
+from Variables import WORKBOOKNAMEDATA
 # -*- coding: utf-8 -*-
 
 
+# Function for Jenkins virtual machine display
 def AdjustResolution():
     display = Display(visible=0, size=(800, 800))
     display.start()
 
-workbook = xlrd.open_workbook(workbookNameData)
-worksheet = workbook.sheet_by_index(0)
-url = worksheet.cell(1, 0).value
-username = worksheet.cell(1, 1).value
-password = worksheet.cell(1, 2).value
-adjustResolution = worksheet.cell(1, 3).value
 
-if adjustResolution == 1:
+class CONSTANTS:
+    WORKBOOK = xlrd.open_workbook(WORKBOOKNAMEDATA)
+    WORKSHEET = WORKBOOK.sheet_by_index(0)
+    URL = WORKSHEET.cell(1, 0).value
+    USERNAME = WORKSHEET.cell(1, 1).value
+    PASSWORD = WORKSHEET.cell(1, 2).value
+    ADJUSTRESOLUTION = WORKSHEET.cell(1, 3).value
+
+
+if CONSTANTS.ADJUSTRESOLUTION == 1:
     AdjustResolution()
+
 
 class Verify_Menu_Options(unittest.TestCase):
 
@@ -52,16 +57,16 @@ class Verify_Menu_Options(unittest.TestCase):
             "  respHeaders: [],                                                " +
             "  filters: [{enabled: true, type: 'urls', urlPattern : '*//*crc-prod-ne-tg-elb-1066571327.us-west-2.elb.amazonaws.com/*' , comment: ''},]                                                     " +
             "}]));                                                             ")
-        driver.get(url)
+        driver.get(CONSTANTS.URL)
 
         # Login To The System
         element = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, 'sign-in-link')))
         driver.find_element_by_id('sign-in-link').click()
-        driver.find_element_by_id('userAccountEmail').send_keys(username)
-        driver.find_element_by_id('userAccountPassword').send_keys(password)
+        driver.find_element_by_id('userAccountEmail').send_keys(CONSTANTS.USERNAME)
+        driver.find_element_by_id('userAccountPassword').send_keys(CONSTANTS.PASSWORD)
         driver.find_element_by_id('userAccountPassword').submit()
 
-        # Check that the menu items are all present
+        # Check that all menu items are present
         left_Panel_Wait = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@title="Ryan’s Favorites"]')))
         # 1
         assert (driver.find_element_by_xpath('//*[@title="Ryan’s Favorites"]').is_enabled()) == True, "Favorites Is Faulty"

@@ -1,67 +1,64 @@
-# coding=utf-8
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import Select
-from selenium.webdriver.common import action_chains, keys
 from selenium.webdriver.common.by import By
 import time
 import unittest
 import xlrd
 import requests
-from Variables import workbookNameData
+from Variables import WORKBOOKNAMEDATA
 from pyvirtualdisplay import Display
-# -*- coding: utf-8 -*-
 
-# /Users/ryankavanaugh/Desktop/AmazonIA/
 
+class CONSTANTS:
+    WORKBOOK = xlrd.open_workbook(WORKBOOKNAMEDATA)
+    WORKSHEET = WORKBOOK.sheet_by_index(0)
+    URL = WORKSHEET.cell(1, 0).value
+    ADJUSTRESOLUTION = WORKSHEET.cell(1, 3).value
+    LEGENDDATAWORKSHEET = WORKBOOK.sheet_by_index(2)
+    LEGENDDATA = []
+
+    # Create list with relevant Legend data *Check For Each Agency*
+    for x in range (1, 9):
+        LEGENDDATA.append(LEGENDDATAWORKSHEET.cell(x, 0).value)
+
+
+# Function for Jenkins virtual machine display
 def AdjustResolution():
     display = Display(visible=0, size=(800, 800))
     display.start()
 
-workbook = xlrd.open_workbook(workbookNameData)
-worksheet = workbook.sheet_by_index(0)
-url = worksheet.cell(1, 0).value
-username = worksheet.cell(1, 1).value
-password = worksheet.cell(1, 2).value
-adjustResolution = worksheet.cell(1, 3).value
 
-# Pull data from spreadsheet to compare against web page
-legendDataWS = workbook.sheet_by_index(2)
-legendData = []
-# Range of spreadsheet *Check For Each Agency*
-for x in range (1, 9):
-    legendData.append(legendDataWS.cell(x, 0).value)
-
-if adjustResolution == 1:
+if CONSTANTS.ADJUSTRESOLUTION == 1:
     AdjustResolution()
+
+
+def amz_headers_and_return_driver():
+    options = webdriver.ChromeOptions()
+    options.add_extension('ModHeader_v2.1.2.crx')
+    driver = webdriver.Chrome(chrome_options=options)
+    driver.maximize_window()
+    driver.get("chrome-extension://idgpnmonknjnojddfkpgkljpfnnfcklj/icon.png")
+    driver.execute_script(
+        "localStorage.setItem('profiles', JSON.stringify([{                " +
+        "  title: 'Selenium', hideComment: true, appendMode: '',           " +
+        "  headers: [                                                      " +
+        "    {enabled: true, name: 'Host', value: 'hb.511.nebraska.gov', comment: ''}, " +
+        "  ],                                                              " +
+        "  respHeaders: [],                                                " +
+        "  filters: [{enabled: true, type: 'urls', urlPattern : '*//*crc-prod-ne-tg-elb-1066571327.us-west-2.elb.amazonaws.com/*' , comment: ''},]                                                     " +
+        "}])); ")
+    return driver
 
 
 class Verify_Legend_Data(unittest.TestCase):
 
-    def setUp(self):
-        # Includes options for the ModHeader chrome extension
-        options = webdriver.ChromeOptions()
-        options.add_extension('ModHeader_v2.1.2.crx')
-        self.driver = webdriver.Chrome(chrome_options=options)
-        self.driver.maximize_window()
-
 
     def test_Legend_Data_Text(self):
-        driver = self.driver
-        driver.get("chrome-extension://idgpnmonknjnojddfkpgkljpfnnfcklj/icon.png")
-        driver.execute_script(
-            "localStorage.setItem('profiles', JSON.stringify([{                " +
-            "  title: 'Selenium', hideComment: true, appendMode: '',           " +
-            "  headers: [                                                      " +
-            "    {enabled: true, name: 'Host', value: 'hb.511.nebraska.gov', comment: ''}, " +
-            "  ],                                                              " +
-            "  respHeaders: [],                                                " +
-            "  filters: [{enabled: true, type: 'urls', urlPattern : '*//*crc-prod-ne-tg-elb-1066571327.us-west-2.elb.amazonaws.com/*' , comment: ''},]                                                     " +
-            "}]));                                                             ")
-        driver.get(url)
+
+        driver = amz_headers_and_return_driver()
+        driver.get(CONSTANTS.URL)
 
         searchButonWait = WebDriverWait(driver, 30).until(EC.element_to_be_clickable((By.ID, 'mapLegend')))
         mapLegend = driver.find_element_by_id('mapLegend')
@@ -82,15 +79,10 @@ class Verify_Legend_Data(unittest.TestCase):
         # This prints off all the data needed for when switching to a new agency
         # print legendContent.text
 
-        # Range: *Check For Each Agency*
+        # Run through Legend data list pulled from spreadsheet: *Check For Each Agency*
         for indexNumber in range (0, 8):
-            word = legendData[indexNumber]
-            #print word
+            word = CONSTANTS.LEGENDDATA[indexNumber]
             assert word in pageData
-
-
-    def tearDown(self):
-        self.driver.quit()
 
 
 if __name__ == '__main__':
