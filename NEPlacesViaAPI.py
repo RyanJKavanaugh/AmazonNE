@@ -120,7 +120,6 @@ def assert_the_correct_places_are_saved_to_TG_Web(driver):
 class Verify_Saved_Places_Via_The_API(unittest.TestCase):
 
     def test_create_new_places(self):
-
         headers = {'host': 'hb.511.nebraska.gov'}
 
         # Gather permissions data for working with the API
